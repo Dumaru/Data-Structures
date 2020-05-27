@@ -409,6 +409,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nodeInfo: {fileID: 11400000, guid: 88af691ed9a1c5d4184fda803f8ced58, type: 2}
   nodeNameText: {fileID: 5912447324030205332}
+  meshRenderer: {fileID: 5912447324766992334}
 --- !u!1 &5912447324897819133
 GameObject:
   m_ObjectHideFlags: 0

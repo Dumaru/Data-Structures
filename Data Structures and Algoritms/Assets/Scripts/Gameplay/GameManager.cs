@@ -6,18 +6,18 @@ using Algoritms;
 public class GameManager : MonoBehaviour
 {
     HashSet<GameNode> gameNodes = new HashSet<GameNode>();
-    Queue<string> pathWaypoints = new Queue<string>();
+    [SerializeField]
+    Stack<string> pathWaypoints = new Stack<string>();
     [SerializeField]
     GameNode start;
     [SerializeField]
     GameNode end;
     [SerializeField]
     GameNode current;
+    bool alreadySearched = false;
     // Start is called before the first frame update
     void Start()
     {
-        // TestPriorityQueue();
-        TestWightedGraph();
     }
 
     public void AddGameNode(GameNode gameNode)
@@ -27,7 +27,11 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
+        if (gameNodes.Count > 0 && !alreadySearched)
+        {
+            SetupAndFindPath();
+            alreadySearched = true;
+        }
     }
 
     public void SetupAndFindPath()
@@ -50,12 +54,15 @@ public class GameManager : MonoBehaviour
         }
         // Find the best path
         string[] path = FindPath(AlgoritmName.Dijsktra, weightedGraph, start.Info.name, end.Info.name);
+        Debug.Log("Path => " + string.Join("->", path));
         // Put way points into a queue
-        for (int i = 0; i < path.Length; ++i)
+        for (int i = 1; i <= path.Length; ++i)
         {
-            pathWaypoints.Enqueue(path[path.Length - i]);
+            pathWaypoints.Push(path[path.Length - i]);
         }
-        Debug.Log("Cola \n" + string.Join("-", pathWaypoints.ToArray()));
+        Debug.Log("Cola \n" + pathWaypoints.Pop());
+        Debug.Log("Cola \n" + pathWaypoints.Pop());
+        Debug.Log("Cola \n" + pathWaypoints.Pop());
         current = start;
     }
 
@@ -81,7 +88,7 @@ public class GameManager : MonoBehaviour
     }
 
 
-    private void TestWightedGraph()
+    private void TestWeightedGraph()
     {
         WeightedGraph grafoValorado = new WeightedGraph(5, false);
         grafoValorado.nuevoVertex("A");
