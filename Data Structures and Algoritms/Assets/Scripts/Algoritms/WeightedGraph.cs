@@ -62,7 +62,7 @@ namespace Algoritms
             return (i < numVerts) ? i : -1;
         }
 
-        public void nuevoArco(string a, string b, int w)
+        public void nuevoArco(string a, string b, float w)
         {
 
             int va, vb;

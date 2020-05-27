@@ -5,19 +5,76 @@ using UnityEngine;
 using Algoritms;
 public class GameManager : MonoBehaviour
 {
-    List<GameNode> gameNodes = new List<GameNode>();
+    HashSet<GameNode> gameNodes = new HashSet<GameNode>();
+    Queue<string> pathWaypoints = new Queue<string>();
+    [SerializeField]
     GameNode start;
+    [SerializeField]
     GameNode end;
+    [SerializeField]
+    GameNode current;
     // Start is called before the first frame update
     void Start()
     {
-        start = GameObject.Find("Sevilla")?.GetComponent<GameNode>();
-        end = GameObject.Find("Barcelona")?.GetComponent<GameNode>();
-
         // TestPriorityQueue();
         TestWightedGraph();
 
     }
+
+    public void AddGameNode(GameNode gameNode)
+    {
+        gameNodes.Add(gameNode);
+    }
+    // Update is called once per frame
+    void Update()
+    {
+
+    }
+
+    public void SetupAndFindPath()
+    {
+        // Setup graph with costs
+        WeightedGraph weightedGraph = new WeightedGraph(gameNodes.Count, false);
+        // Add vertexts to the graph
+        foreach (GameNode gameNode in gameNodes)
+        {
+            weightedGraph.nuevoVertex(gameNode.Info.name);
+        }
+        // Set the relationships between vertexts
+        foreach (GameNode gameNode in gameNodes)
+        {
+            string name = gameNode.Info.name;
+            foreach (ArcInfo arcInfo in gameNode.Info.aydacents)
+            {
+                weightedGraph.nuevoArco(name, arcInfo.adyacentName.ToString(), arcInfo.cost);
+            }
+        }
+        // Find the best path
+        string[] path = FindPath(AlgoritmName.Dijsktra, weightedGraph, start.Info.name, end.Info.name);
+        // Put way points into a queue
+        for (int i = 0; i < path.Length; ++i)
+        {
+            pathWaypoints.Enqueue(path[i]);
+        }
+        current = start;
+    }
+
+    public string[] FindPath(AlgoritmName algoritmName, WeightedGraph weightedGraph, string start, string destiny)
+    {
+        string[] path = null;
+        switch (algoritmName)
+        {
+            case AlgoritmName.Dijsktra:
+                Dijkstra dijkstra = new Dijkstra();
+                path = dijkstra.FindPath(weightedGraph, start, destiny);
+                break;
+            default:
+                throw new Exception("No parameters specified");
+        }
+        return path;
+    }
+
+
 
     private void TestWightedGraph()
     {
@@ -35,6 +92,7 @@ public class GameManager : MonoBehaviour
         Debug.Log(grafoValorado.ToString());
         Dijkstra caminoCorto = new Dijkstra();
         string[] camino = caminoCorto.FindPath(grafoValorado, "A", "E");
+
         Debug.Log("Camino :" + string.Join("-> ", camino));
     }
 
@@ -68,28 +126,4 @@ public class GameManager : MonoBehaviour
         Debug.Log("End Priority Queue demo");
     }
 
-    public void AddGameNode(GameNode gameNode)
-    {
-        gameNodes.Add(gameNode);
-    }
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
-
-    public string[] FindPath(AlgoritmName algoritmName)
-    {
-        string[] path = null;
-        switch (algoritmName)
-        {
-            case AlgoritmName.Dijsktra:
-
-                break;
-            default:
-                FindPath(AlgoritmName.Dijsktra);
-                break;
-        }
-        return path;
-    }
 }

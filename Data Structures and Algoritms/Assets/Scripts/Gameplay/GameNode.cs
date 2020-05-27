@@ -13,6 +13,9 @@ public class GameNode : MonoBehaviour
     [SerializeField]
     private TextMeshPro nodeNameText;
 
+    #region Properties
+    public NodeInfo Info => nodeInfo;
+    #endregion
     // Start is called before the first frame update
     void Start()
     {
