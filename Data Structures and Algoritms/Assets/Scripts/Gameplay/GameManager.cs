@@ -1,10 +1,17 @@
-﻿using System;
+﻿using System.Linq;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Algoritms;
+using TMPro;
+
 public class GameManager : MonoBehaviour
 {
+    [SerializeField]
+    GameObject targetToMove;
+    TextMeshPro targetToMoveText;
+    Vector3 distanceOffset = new Vector3(0.2f, 0f, 0.2f);
     HashSet<GameNode> gameNodes = new HashSet<GameNode>();
     [SerializeField]
     Stack<string> pathWaypoints = new Stack<string>();
@@ -14,10 +21,16 @@ public class GameManager : MonoBehaviour
     GameNode end;
     [SerializeField]
     GameNode current;
+    GameNode next;
+    bool movingTarget = false;
     bool alreadySearched = false;
+    float speed = 0.3f;
     // Start is called before the first frame update
     void Start()
     {
+        targetToMove = (targetToMove == null ? GameObject.FindGameObjectWithTag("Target") : targetToMove);
+        targetToMove.transform.position = start.gameObject.transform.position - distanceOffset;
+        targetToMoveText = targetToMove.GetComponentInChildren<TextMeshPro>();
     }
 
     public void AddGameNode(GameNode gameNode)
@@ -27,45 +40,72 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (gameNodes.Count > 0 && !alreadySearched)
+        if (movingTarget)
         {
-            SetupAndFindPath();
-            alreadySearched = true;
+            targetToMove.transform.position = Vector3.Lerp(targetToMove.transform.position, next.gameObject.transform.position, Time.deltaTime * speed);
+            Debug.Log("Distance " + Vector3.Distance(targetToMove.transform.position, next.transform.position));
+            if (Vector3.Distance(targetToMove.transform.position, next.transform.position) < 0.2)
+            {
+                SetTargetDestiny();
+            }
         }
     }
 
     public void SetupAndFindPath()
     {
-        // Setup graph with costs
-        WeightedGraph weightedGraph = new WeightedGraph(gameNodes.Count, false);
-        // Add vertexts to the graph
-        foreach (GameNode gameNode in gameNodes)
+        Debug.Log("Call to find path");
+        if (gameNodes.Count > 1)
         {
-            weightedGraph.nuevoVertex(gameNode.Info.name);
-        }
-        // Set the relationships between vertexts
-        foreach (GameNode gameNode in gameNodes)
-        {
-            string name = gameNode.Info.name;
-            foreach (ArcInfo arcInfo in gameNode.Info.aydacents)
+            Debug.Log("Call to find path with gameNodes");
+
+            // Setup graph with costs
+            WeightedGraph weightedGraph = new WeightedGraph(gameNodes.Count, false);
+            // Add vertexts to the graph
+            foreach (GameNode gameNode in gameNodes)
             {
-                weightedGraph.nuevoArco(name, arcInfo.adyacentName.ToString(), arcInfo.cost);
+                weightedGraph.nuevoVertex(gameNode.Info.name);
             }
+            // Set the relationships between vertexts
+            foreach (GameNode gameNode in gameNodes)
+            {
+                string name = gameNode.Info.name;
+                foreach (ArcInfo arcInfo in gameNode.Info.aydacents)
+                {
+                    weightedGraph.nuevoArco(name, arcInfo.adyacentName.ToString(), arcInfo.cost);
+                }
+            }
+            // Find the best path
+            string[] path = FindPath(AlgoritmName.Dijsktra, weightedGraph, start.Info.name, end.Info.name);
+            Debug.Log("Path => " + string.Join("->", path));
+            // Put way points into a queue
+            for (int i = 1; i <= path.Length; ++i)
+            {
+                pathWaypoints.Push(path[path.Length - i]);
+            }
+            current = start;
+            SetTargetDestiny();
         }
-        // Find the best path
-        string[] path = FindPath(AlgoritmName.Dijsktra, weightedGraph, start.Info.name, end.Info.name);
-        Debug.Log("Path => " + string.Join("->", path));
-        // Put way points into a queue
-        for (int i = 1; i <= path.Length; ++i)
+        else
         {
-            pathWaypoints.Push(path[path.Length - i]);
+            Debug.Log("The list of nodes is empty");
         }
-        Debug.Log("Cola \n" + pathWaypoints.Pop());
-        Debug.Log("Cola \n" + pathWaypoints.Pop());
-        Debug.Log("Cola \n" + pathWaypoints.Pop());
-        current = start;
     }
 
+    public void SetTargetDestiny()
+    {
+        if (pathWaypoints.Count != 0)
+        {
+            String nextName = pathWaypoints.Pop();
+            next = gameNodes.Where(node => (node as GameNode).Info.nodeName.ToString() == nextName).First();
+            Debug.Log("The next " + next.gameObject.name);
+            movingTarget = true;
+            targetToMoveText.text = next.gameObject.name;
+        }
+        else
+        {
+            movingTarget = false;
+        }
+    }
     public string[] FindPath(AlgoritmName algoritmName, WeightedGraph weightedGraph, string start, string destiny)
     {
         string[] path = null;
