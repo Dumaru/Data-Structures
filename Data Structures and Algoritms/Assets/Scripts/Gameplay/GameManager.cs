@@ -18,7 +18,6 @@ public class GameManager : MonoBehaviour
     {
         // TestPriorityQueue();
         TestWightedGraph();
-
     }
 
     public void AddGameNode(GameNode gameNode)
@@ -54,8 +53,9 @@ public class GameManager : MonoBehaviour
         // Put way points into a queue
         for (int i = 0; i < path.Length; ++i)
         {
-            pathWaypoints.Enqueue(path[i]);
+            pathWaypoints.Enqueue(path[path.Length - i]);
         }
+        Debug.Log("Cola \n" + string.Join("-", pathWaypoints.ToArray()));
         current = start;
     }
 
@@ -74,6 +74,11 @@ public class GameManager : MonoBehaviour
         return path;
     }
 
+    public void RenderLine()
+    {
+        // Peek all the nodes from the queue and render a line
+
+    }
 
 
     private void TestWightedGraph()

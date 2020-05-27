@@ -10,5 +10,5 @@ public enum NodeName
     Oviedo,
     Sevilla,
     Melilla,
-
+    Bogota,
 }
