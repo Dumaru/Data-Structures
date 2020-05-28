@@ -15,6 +15,7 @@ public class ArcInfo
     }
 }
 
+[System.Serializable]
 [CreateAssetMenu(fileName = "NodeInfo", menuName = "ScriptableObjects/Node Info", order = 1)]
 public class NodeInfo : ScriptableObject
 {

@@ -8,8 +8,7 @@ using TMPro;
 public class GameNode : MonoBehaviour
 {
     public static int materialNumber = 0;
-    [SerializeField]
-    private NodeInfo nodeInfo;
+    public NodeInfo nodeInfo;
 
     [SerializeField]
     private TextMeshPro nodeNameText;
@@ -24,6 +23,10 @@ public class GameNode : MonoBehaviour
 
     private void Awake()
     {
+        if (!Application.isEditor)
+        {
+            nodeInfo = Resources.Load<NodeInfo>(this.gameObject.name);
+        }
         materialNumber = 0;
     }
     // Start is called before the first frame update
