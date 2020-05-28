@@ -13,6 +13,7 @@ public class GameManager : MonoBehaviour
     TextMeshPro targetToMoveText;
     Vector3 distanceOffset = new Vector3(0.2f, 0f, 0.2f);
     HashSet<GameNode> gameNodes = new HashSet<GameNode>();
+    HashSet<GameObject> lines = new HashSet<GameObject>();
     [SerializeField]
     Stack<string> pathWaypoints = new Stack<string>();
     [SerializeField]
@@ -141,6 +142,7 @@ public class GameManager : MonoBehaviour
                 }
             }
             // Find the best path
+            restartLines();
             string[] path = FindPath(AlgoritmName.Dijsktra, weightedGraph, start.Info.name, end.Info.name);
             Debug.Log("Path => " + string.Join("->", path));
             modifyLine(path);
@@ -203,11 +205,22 @@ public class GameManager : MonoBehaviour
                 String s2 = gameNode2.Info.nodeName.ToString() + " to " + gameNode.Info.nodeName.ToString();
                 if (GameObject.Find(s1) == null && GameObject.Find(s2) == null)
                 {
-                    createLine(gameNode, gameNode2);
+                    lines.Add(createLine(gameNode, gameNode2));
                 }
 
             }
             // Peek all the nodes from the queue and render a line
+        }
+    }
+
+    public void restartLines()
+    {
+        foreach(GameObject go in lines)
+        {
+            LineRenderer r = go.GetComponent<LineRenderer>();
+            Color c = Color.red;
+            r.startColor = c;
+            r.endColor = c;
         }
     }
 
@@ -230,7 +243,7 @@ public class GameManager : MonoBehaviour
 
     }
 
-    private void createLine(GameNode origen, GameNode destino)
+    private GameObject createLine(GameNode origen, GameNode destino)
     {
         Vector3 vo = origen.transform.position;
         Vector3 vd = destino.transform.position;
@@ -248,6 +261,7 @@ public class GameManager : MonoBehaviour
         poss.Add(vo);
         poss.Add(vd);
         r.SetPositions(poss.ToArray());
+        return go;
     }
 
     private void modifyColorLine(String origen, String destino, Color color)
