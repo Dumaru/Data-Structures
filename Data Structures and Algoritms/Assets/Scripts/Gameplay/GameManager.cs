@@ -138,6 +138,7 @@ public class GameManager : MonoBehaviour
             // Find the best path
             string[] path = FindPath(AlgoritmName.Dijsktra, weightedGraph, start.Info.name, end.Info.name);
             Debug.Log("Path => " + string.Join("->", path));
+            modifyLine(path);
             // Put way points into a queue
             for (int i = 1; i <= path.Length; ++i)
             {
@@ -189,24 +190,73 @@ public class GameManager : MonoBehaviour
     {
         foreach (GameNode gameNode in gameNodes)
         {
-            Vector3 orp = gameNode.transform.position;
             string[] adyacentes = gameNode.GetAdyacents();
             foreach (String adyacente in adyacentes)
             {
-                
                 GameNode gameNode2 = gameNodes.Where(node => (node as GameNode).Info.nodeName.ToString() == adyacente).First();
-                Vector3 dep = gameNode2.transform.position;
-                LineRenderer r = new GameObject().AddComponent<LineRenderer>();
-                r.startWidth = 0.05f;
-                r.endWidth = 0.05f;
-
-                List<Vector3> poss = new List<Vector3>();
-                poss.Add(orp);
-                poss.Add(dep);
-                r.SetPositions(poss.ToArray());
+                string s1 = gameNode.Info.nodeName.ToString() + " to " + gameNode2.Info.nodeName.ToString();
+                String s2 = gameNode2.Info.nodeName.ToString() + " to " + gameNode.Info.nodeName.ToString();
+                if (GameObject.Find(s1) == null && GameObject.Find(s2) == null)
+                {
+                    createLine(gameNode, gameNode2);
+                }
+                
             }
             // Peek all the nodes from the queue and render a line
         }
+    }
+
+    public void modifyLine(string[] path)
+    {
+        String origen = null;
+        foreach(string name in path)
+        {
+            if(origen == null)
+            {
+                origen = name;
+            }
+            else
+            {
+                modifyColorLine(origen, name, Color.green);
+                origen = name;
+            }
+        }
+
+        
+    }
+
+    private void createLine(GameNode origen, GameNode destino)
+    {
+        Vector3 vo = origen.transform.position;
+        Vector3 vd = destino.transform.position;
+        GameObject go = new GameObject();
+        go.name = origen.Info.nodeName.ToString() + " to " + destino.Info.nodeName.ToString();
+        Debug.Log(go.name);
+        LineRenderer r = go.AddComponent<LineRenderer>();
+        r.material = new Material(Shader.Find("Sprites/Default"));
+        Color color = Color.red;
+        r.startColor = color;
+        r.endColor = color;
+        r.startWidth = 0.08f;
+        r.endWidth = 0.08f;
+        List<Vector3> poss = new List<Vector3>();
+        poss.Add(vo);
+        poss.Add(vd);
+        r.SetPositions(poss.ToArray());
+    }
+
+    private void modifyColorLine(String origen, String destino, Color color)
+    {
+        GameObject go = GameObject.Find(origen + " to " + destino);
+        if (go == null)
+        {
+            go = GameObject.Find(destino + " to " + origen);
+        }
+        Debug.Log(go.name);
+        LineRenderer r = go.GetComponent<LineRenderer>();
+        r.startColor = color;
+        r.endColor = color;
+
     }
 
 
