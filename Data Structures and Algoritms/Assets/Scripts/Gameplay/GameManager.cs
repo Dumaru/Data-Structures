@@ -56,6 +56,10 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            Instantiate(Resources.Load("PauseMenu"));
+        }
         mouseOnUIElement = GameObject.Find("Canvas").GetComponentInChildren<UIElement>().MouseOver;
         if (movingTarget)
         {
