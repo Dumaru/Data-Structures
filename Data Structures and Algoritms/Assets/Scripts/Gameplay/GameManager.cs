@@ -193,8 +193,8 @@ public class GameManager : MonoBehaviour
             string[] adyacentes = gameNode.GetAdyacents();
             foreach (String adyacente in adyacentes)
             {
-                GameObject go = GameObject.Find(adyacente);
-                GameNode gameNode2 = findGameNode(go);
+                
+                GameNode gameNode2 = gameNodes.Where(node => (node as GameNode).Info.nodeName.ToString() == adyacente).First();
                 Vector3 dep = gameNode2.transform.position;
                 LineRenderer r = new GameObject().AddComponent<LineRenderer>();
                 r.startWidth = 0.05f;
@@ -209,17 +209,6 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    private GameNode findGameNode(GameObject gameObject)
-    {
-        foreach(GameNode gameNode in gameNodes)
-        {
-            if (gameNode.gameObject.Equals(gameObject))
-            {
-                return gameNode;
-            }
-        }
-        return null;
-    }
 
 
     private void TestWeightedGraph()
