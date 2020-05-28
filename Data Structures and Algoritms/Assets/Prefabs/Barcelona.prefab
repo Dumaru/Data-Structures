@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 5912447324030205334}
   - component: {fileID: 5912447324030205335}
   - component: {fileID: 5912447324030205332}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Text (TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -217,7 +217,7 @@ GameObject:
   - component: {fileID: 5912447324065626836}
   - component: {fileID: 5912447324065626837}
   - component: {fileID: 5912447324065626834}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: InfoParent
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -313,7 +313,7 @@ GameObject:
   - component: {fileID: 5912447324766992334}
   - component: {fileID: 5912447324766992335}
   - component: {fileID: 5912447324766992336}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Barcelona
   m_TagString: GameNode
   m_Icon: {fileID: 0}
@@ -419,7 +419,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5912447324897819132}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: SectionInfo
   m_TagString: Untagged
   m_Icon: {fileID: 0}

@@ -74,9 +74,14 @@ public class GameManager : MonoBehaviour
     {
         if (Input.GetMouseButtonDown(0) && !mouseOnUIElement)
         {
+            // Vector3 rayStartingPos = cameraRef.transform.position;
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             Debug.Log("Mouse click");
-            if (Physics.Raycast(cameraRef.transform.position, cameraRef.transform.forward, out RaycastHit hit, interactableLayer))
+
+            // if (Physics.Raycast(rayStartingPos, cameraRef.transform.forward, out RaycastHit hit, interactableLayer))
+            if (Physics.Raycast(ray, out RaycastHit hit, 666))
             {
+                Debug.Log("Mouse click with ray");
                 if (hit.transform.gameObject.CompareTag("GameNode"))
                 {
                     Debug.Log("Game Node Clicked");
@@ -200,7 +205,7 @@ public class GameManager : MonoBehaviour
                 {
                     createLine(gameNode, gameNode2);
                 }
-                
+
             }
             // Peek all the nodes from the queue and render a line
         }
@@ -209,9 +214,9 @@ public class GameManager : MonoBehaviour
     public void modifyLine(string[] path)
     {
         String origen = null;
-        foreach(string name in path)
+        foreach (string name in path)
         {
-            if(origen == null)
+            if (origen == null)
             {
                 origen = name;
             }
@@ -222,7 +227,7 @@ public class GameManager : MonoBehaviour
             }
         }
 
-        
+
     }
 
     private void createLine(GameNode origen, GameNode destino)
