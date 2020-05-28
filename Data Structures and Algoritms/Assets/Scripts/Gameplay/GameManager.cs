@@ -45,6 +45,7 @@ public class GameManager : MonoBehaviour
         cameraRef = Camera.main;
         audioSource = GetComponent<AudioSource>();
         ChangeMarkersPosition();
+        RenderLine();
     }
 
     public void AddGameNode(GameNode gameNode)
@@ -175,8 +176,38 @@ public class GameManager : MonoBehaviour
 
     public void RenderLine()
     {
-        // Peek all the nodes from the queue and render a line
+        foreach (GameNode gameNode in gameNodes)
+        {
+            Vector3 orp = gameNode.transform.position;
+            string[] adyacentes = gameNode.GetAdyacents();
+            foreach (String adyacente in adyacentes)
+            {
+                GameObject go = GameObject.Find(adyacente);
+                GameNode gameNode2 = findGameNode(go);
+                Vector3 dep = gameNode2.transform.position;
+                LineRenderer r = new GameObject().AddComponent<LineRenderer>();
+                r.startWidth = 0.05f;
+                r.endWidth = 0.05f;
 
+                List<Vector3> poss = new List<Vector3>();
+                poss.Add(orp);
+                poss.Add(dep);
+                r.SetPositions(poss.ToArray());
+            }
+            // Peek all the nodes from the queue and render a line
+        }
+    }
+
+    private GameNode findGameNode(GameObject gameObject)
+    {
+        foreach(GameNode gameNode in gameNodes)
+        {
+            if (gameNode.gameObject.Equals(gameObject))
+            {
+                return gameNode;
+            }
+        }
+        return null;
     }
 
 
