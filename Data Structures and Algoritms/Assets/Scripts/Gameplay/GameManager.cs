@@ -37,6 +37,7 @@ public class GameManager : MonoBehaviour
     GameObject endMarker;
     AudioSource audioSource;
     bool mouseOnUIElement = true;
+    ParticleSystem finishParticles;
     // Start is called before the first frame update
     void Start()
     {
@@ -46,6 +47,7 @@ public class GameManager : MonoBehaviour
         targetToMoveText = targetToMove.GetComponentInChildren<TextMeshPro>();
         cameraRef = Camera.main;
         audioSource = GetComponent<AudioSource>();
+        finishParticles = endMarker.GetComponentInChildren<ParticleSystem>();
         ChangeMarkersPosition();
         RenderLine();
     }
@@ -179,6 +181,7 @@ public class GameManager : MonoBehaviour
         {
             Debug.Log("Arrived to destination");
             audioSource.Play();
+            finishParticles.Play();
             movingTarget = false;
         }
     }
@@ -219,7 +222,7 @@ public class GameManager : MonoBehaviour
 
     public void restartLines()
     {
-        foreach(GameObject go in lines)
+        foreach (GameObject go in lines)
         {
             LineRenderer r = go.GetComponent<LineRenderer>();
             Color c = Color.red;
