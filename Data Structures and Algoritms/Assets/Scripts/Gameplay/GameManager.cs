@@ -24,13 +24,27 @@ public class GameManager : MonoBehaviour
     GameNode next;
     bool movingTarget = false;
     bool alreadySearched = false;
+
+    Camera cameraRef;
     float speed = 0.3f;
+    LayerMask interactableLayer;
+    bool startSetted;
+    bool finishSetted;
+    [SerializeField]
+    GameObject startMarker;
+    [SerializeField]
+    GameObject endMarker;
+    AudioSource audioSource;
     // Start is called before the first frame update
     void Start()
     {
+        interactableLayer = LayerMask.NameToLayer("Interactable");
         targetToMove = (targetToMove == null ? GameObject.FindGameObjectWithTag("Target") : targetToMove);
         targetToMove.transform.position = start.gameObject.transform.position - distanceOffset;
         targetToMoveText = targetToMove.GetComponentInChildren<TextMeshPro>();
+        cameraRef = Camera.main;
+        audioSource = GetComponent<AudioSource>();
+        ChangeMarkersPosition();
     }
 
     public void AddGameNode(GameNode gameNode)
@@ -43,17 +57,52 @@ public class GameManager : MonoBehaviour
         if (movingTarget)
         {
             targetToMove.transform.position = Vector3.Lerp(targetToMove.transform.position, next.gameObject.transform.position, Time.deltaTime * speed);
-            Debug.Log("Distance " + Vector3.Distance(targetToMove.transform.position, next.transform.position));
+            // Debug.Log("Distance " + Vector3.Distance(targetToMove.transform.position, next.transform.position));
             if (Vector3.Distance(targetToMove.transform.position, next.transform.position) < 0.2)
             {
                 SetTargetDestiny();
             }
         }
+
+        CheckForInput();
+    }
+
+    private void CheckForInput()
+    {
+        if (Input.GetMouseButtonDown(0))
+        {
+            if (Physics.Raycast(cameraRef.transform.position, cameraRef.transform.forward, out RaycastHit hit, interactableLayer))
+            {
+                if (hit.transform.gameObject.CompareTag("GameNode"))
+                {
+                    GameNode temp = hit.transform.gameObject.GetComponent<GameNode>();
+                    if (startSetted && finishSetted)
+                    {
+                        start = temp;
+                        finishSetted = false;
+                    }
+                    else if (startSetted && !finishSetted)
+                    {
+                        end = temp;
+                        finishSetted = true;
+                    }
+                }
+            }
+        }
+    }
+
+    private void ChangeMarkersPosition()
+    {
+        startMarker.transform.position = start.transform.position + distanceOffset;
+        endMarker.transform.position = end.transform.position + distanceOffset;
     }
 
     public void SetupAndFindPath()
     {
+        audioSource.Play();
+
         Debug.Log("Call to find path");
+        ChangeMarkersPosition();
         if (gameNodes.Count > 1)
         {
             Debug.Log("Call to find path with gameNodes");
@@ -83,6 +132,7 @@ public class GameManager : MonoBehaviour
                 pathWaypoints.Push(path[path.Length - i]);
             }
             current = start;
+            targetToMove.transform.position = current.transform.position;
             SetTargetDestiny();
         }
         else
@@ -103,6 +153,8 @@ public class GameManager : MonoBehaviour
         }
         else
         {
+            Debug.Log("Arrived to destination");
+            audioSource.Play();
             movingTarget = false;
         }
     }
