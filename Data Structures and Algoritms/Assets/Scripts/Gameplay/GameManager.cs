@@ -35,6 +35,7 @@ public class GameManager : MonoBehaviour
     [SerializeField]
     GameObject endMarker;
     AudioSource audioSource;
+    bool mouseOnUIElement = true;
     // Start is called before the first frame update
     void Start()
     {
@@ -54,6 +55,7 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        mouseOnUIElement = GameObject.Find("Canvas").GetComponentInChildren<UIElement>().MouseOver;
         if (movingTarget)
         {
             targetToMove.transform.position = Vector3.Lerp(targetToMove.transform.position, next.gameObject.transform.position, Time.deltaTime * speed);
@@ -69,12 +71,14 @@ public class GameManager : MonoBehaviour
 
     private void CheckForInput()
     {
-        if (Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButtonDown(0) && !mouseOnUIElement)
         {
+            Debug.Log("Mouse click");
             if (Physics.Raycast(cameraRef.transform.position, cameraRef.transform.forward, out RaycastHit hit, interactableLayer))
             {
                 if (hit.transform.gameObject.CompareTag("GameNode"))
                 {
+                    Debug.Log("Game Node Clicked");
                     GameNode temp = hit.transform.gameObject.GetComponent<GameNode>();
                     if (startSetted && finishSetted)
                     {
@@ -86,6 +90,12 @@ public class GameManager : MonoBehaviour
                         end = temp;
                         finishSetted = true;
                     }
+                    else if (!startSetted && !finishSetted)
+                    {
+                        start = temp;
+                        startSetted = true;
+                    }
+                    ChangeMarkersPosition();
                 }
             }
         }
@@ -95,6 +105,7 @@ public class GameManager : MonoBehaviour
     {
         startMarker.transform.position = start.transform.position + distanceOffset;
         endMarker.transform.position = end.transform.position + distanceOffset;
+        targetToMove.transform.position = start.transform.position;
     }
 
     public void SetupAndFindPath()
